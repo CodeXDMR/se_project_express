@@ -7,11 +7,11 @@ const createItem = (req, res) => {
   console.log(req.body);
   console.log(req.user._id);
 
-  const { name, weather, imageURL } = req.body;
+  const { name, weather, imageUrl } = req.body;
   const owner  = req.user._id;
 
   clothingItem
-    .create({ name, weather, imageURL, owner })
+    .create({ name, weather, imageUrl, owner })
     .then((item) => {
       console.log(item);
       res.send({ data: item });
@@ -38,10 +38,10 @@ const getItems = (req, res) => {
 // PUT /item
 const updateItem = (req, res) => {
   const { itemId } = req.params;
-  const { imageURL } = req.body;
+  const { imageUrl } = req.body;
 
   clothingItem
-    .findByIdAndUpdate(itemId, { $set: { imageURL } })
+    .findByIdAndUpdate(itemId, { $set: { imageUrl } })
     .orFail()
     .then((item) => res.status(200).send({ data: item }))
     .catch((err) => {
@@ -77,10 +77,13 @@ const deleteItem = (req, res) => {
 
 // PUT /:itemId/likes
 const likeItem = (req, res) => {
-  // console.log(req.user._id);
+  console.log(req.user._id);
+  console.log(userId);
+  console.log(itemId);
 
-  // const userId = req.user._id;
-  // const { itemId } = req.params;
+
+  const userId = req.user._id;
+  const { itemId } = req.params;
 
   clothingItem.findByIdAndUpdate(
     req.params.itemId,
@@ -110,7 +113,8 @@ const dislikeItem = (req, res) => {
   clothingItem.findByIdAndUpdate(
     itemId,
     { $pull: { likes: userId } },
-    { new: true }
+    { new: true },
+    )
       .orFail()
       .then((item) => res.status(200).send({ data: item }))
       .catch((err) => {
@@ -121,8 +125,7 @@ const dislikeItem = (req, res) => {
           return res.status(400).send({ message: err.message });
         }
         return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
-      }),
-  );
+      })
 };
 
 module.exports = {
