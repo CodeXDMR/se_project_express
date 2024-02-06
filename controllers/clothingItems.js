@@ -3,9 +3,6 @@ const { BAD_REQUEST_ERROR, NOT_FOUND_ERROR, INTERNAL_SERVER_ERROR } = require(".
 
 // POST /item
 const createItem = (req, res) => {
-  // console.log(req);
-  console.log(req.body);
-  console.log(req.user._id);
 
   const { name, weather, imageUrl } = req.body;
   const owner  = req.user._id;
@@ -47,9 +44,9 @@ const updateItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: err.message });
-      } else if (err.name === "CastError") {
         return res.status(NOT_FOUND_ERROR).send({ message: err.message });
+      } else if (err.name === "CastError") {
+        return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
       }
       return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
@@ -67,7 +64,7 @@ const deleteItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: err.message });
+        return res.status(NOT_FOUND_ERROR).send({ message: err.message });
       } else if (err.name === "CastError") {
         return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
       }
@@ -77,7 +74,6 @@ const deleteItem = (req, res) => {
 
 // PUT /:itemId/likes
 const likeItem = (req, res) => {
-  console.log(req.user._id);
 
   const userId = req.user._id;
   const { itemId } = req.params;
@@ -92,9 +88,9 @@ const likeItem = (req, res) => {
       .catch((err) => {
         console.error(err);
         if (err.name === "DocumentNotFoundError") {
-          return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
-        } else if (err.name === "CastError") {
           return res.status(NOT_FOUND_ERROR).send({ message: err.message });
+        } else if (err.name === "CastError") {
+          return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
         }
         return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
       })
@@ -102,7 +98,6 @@ const likeItem = (req, res) => {
 
 // DELETE /:itemId/likes
 const dislikeItem = (req, res) => {
-  console.log(req.user._id);
 
   const userId = req.user._id;
   const { itemId } = req.params;
@@ -117,9 +112,9 @@ const dislikeItem = (req, res) => {
       .catch((err) => {
         console.error(err);
         if (err.name === "DocumentNotFoundError") {
-          return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
-        } else if (err.name === "CastError") {
           return res.status(NOT_FOUND_ERROR).send({ message: err.message });
+        } else if (err.name === "CastError") {
+          return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
         }
         return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
       })

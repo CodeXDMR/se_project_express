@@ -6,5 +6,4 @@ router.get("/:userId", getUser);
 router.get("/", getUsers);
 
 
-
 module.exports = router;
