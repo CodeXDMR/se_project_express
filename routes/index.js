@@ -1,14 +1,14 @@
 const router = require("express").Router();
 const userRouter = require("./users");
 const itemRouter = require("./clothingItems");
-const { Internal_Server_Error } = require("../utils/errors");
+const { INTERNAL_SERVER_ERROR } = require("../utils/errors");
 
 router.use("/users", userRouter);
 router.use("/items", itemRouter);
 
 router.use((req, res) => {
   res
-    .status(Internal_Server_Error)
+    .status(INTERNAL_SERVER_ERROR)
     .send({ message: "Requested resource not found." });
 });
 

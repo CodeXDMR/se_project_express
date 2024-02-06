@@ -1,5 +1,5 @@
 const clothingItem = require("../models/clothingItem");
-const { BAD_REQUEST_ERROR, FORBIDDEN_ERROR, NOT_FOUND_ERROR, INTERNAL_SERVER_ERROR } = require("../utils/errors");
+const { BAD_REQUEST_ERROR, NOT_FOUND_ERROR, INTERNAL_SERVER_ERROR } = require("../utils/errors");
 
 // POST /item
 const createItem = (req, res) => {
@@ -51,7 +51,7 @@ const updateItem = (req, res) => {
       } else if (err.name === "CastError") {
         return res.status(NOT_FOUND_ERROR).send({ message: err.message });
       }
-      return res.status(500).send({ message: err.message });
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 
@@ -63,7 +63,7 @@ const deleteItem = (req, res) => {
   clothingItem
     .findByIdAndDelete(itemId)
     .orFail()
-    .then((itemId) => res.status(204).send({}))
+    .then((itemId) => res.status(200).send({}))
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
@@ -71,23 +71,20 @@ const deleteItem = (req, res) => {
       } else if (err.name === "CastError") {
         return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
       }
-      return res.status(Internal_Server_Error).send({ message: err.message });}
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });}
     );
 };
 
 // PUT /:itemId/likes
 const likeItem = (req, res) => {
   console.log(req.user._id);
-  console.log(userId);
-  console.log(itemId);
-
 
   const userId = req.user._id;
   const { itemId } = req.params;
 
   clothingItem.findByIdAndUpdate(
-    req.params.itemId,
-    { $addToSet: { likes: req.user._id } },
+    itemId,
+    { $addToSet: { likes: userId } },
     { new: true },
     )
       .orFail()
@@ -95,11 +92,11 @@ const likeItem = (req, res) => {
       .catch((err) => {
         console.error(err);
         if (err.name === "DocumentNotFoundError") {
-          return res.status(404).send({ message: err.message });
+          return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
         } else if (err.name === "CastError") {
-          return res.status(400).send({ message: err.message });
+          return res.status(NOT_FOUND_ERROR).send({ message: err.message });
         }
-        return res.status(500).send({ message: err.message });
+        return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
       })
 };
 
@@ -120,9 +117,9 @@ const dislikeItem = (req, res) => {
       .catch((err) => {
         console.error(err);
         if (err.name === "DocumentNotFoundError") {
-          return res.status(404).send({ message: err.message });
+          return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
         } else if (err.name === "CastError") {
-          return res.status(400).send({ message: err.message });
+          return res.status(NOT_FOUND_ERROR).send({ message: err.message });
         }
         return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
       })
