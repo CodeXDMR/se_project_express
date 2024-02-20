@@ -20,7 +20,7 @@ const login = (req, res) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      res.send({ token });
+      res.send({ token }, console.log({ token }));
       // authentication successful! user is in the user variable
     })
     .catch((err) => {
@@ -48,7 +48,7 @@ const createUser = (req, res) => {
     .then((hash) =>
       User.create({ name, avatar, email, password: hash }, console.log(hash)),
     )
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(201).send({name: user.name, avatar: user.avatar, email: user.email}))
     .catch((err) => {
       console.error(err);
       if (err.code === 11000) {
