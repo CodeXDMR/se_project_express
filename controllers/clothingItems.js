@@ -19,11 +19,13 @@ const createItem = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data." });
+        return res
+          .status(BAD_REQUEST_ERROR)
+          .send({ message: "Invalid data. (400)" });
       }
       return res
         .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
+        .send({ message: "An error has occurred on the server. (500)" });
     });
 };
 
@@ -36,7 +38,7 @@ const getItems = (req, res) => {
       console.error(err);
       res
         .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
+        .send({ message: "An error has occurred on the server. (500)" });
     });
 };
 
@@ -54,13 +56,14 @@ const deleteItem = (req, res) => {
       if (err.name === "DocumentNotFoundError") {
         return res
           .status(NOT_FOUND_ERROR)
-          .send({ message: "The request was sent to a non-existent address." });
-      } if (err.name === "CastError") {
-        return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data." });
+          .send({ message: "The request was sent to a non-existent address. (404)" });
+      }
+      if (err.name === "CastError") {
+        return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data. (400)" });
       }
       return res
         .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
+        .send({ message: "An error has occurred on the server. (500)" });
     });
 };
 
@@ -79,7 +82,8 @@ const likeItem = (req, res) => {
         return res
           .status(NOT_FOUND_ERROR)
           .send({ message: "The request was sent to a non-existent address." });
-      } if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data." });
       }
       return res
@@ -103,7 +107,8 @@ const dislikeItem = (req, res) => {
         return res
           .status(NOT_FOUND_ERROR)
           .send({ message: "The request was sent to a non-existent address." });
-      } if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data." });
       }
       return res
