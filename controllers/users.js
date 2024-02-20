@@ -17,7 +17,7 @@ const login = (req, res) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       console.log(user);
-      const token = jwt.sign({ _id: user._id }, "super-strong-secret", {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
       res.send({ token }, console.log({ token }));
@@ -43,12 +43,16 @@ const createUser = (req, res) => {
   console.log(req.body);
 
   bcrypt
-    .hash(password,10)
+    .hash(password, 10)
     .then(console.log(password))
     .then((hash) =>
       User.create({ name, avatar, email, password }, console.log(hash)),
     )
-    .then((user) => res.status(201).send({name: user.name, avatar: user.avatar, email: user.email}))
+    .then((user) =>
+      res
+        .status(201)
+        .send({ name: user.name, avatar: user.avatar, email: user.email }),
+    )
     .catch((err) => {
       console.error(err);
       if (err.code === 11000) {
@@ -122,4 +126,29 @@ const getCurrentUser = (req, res) => {
     });
 };
 
-module.exports = {  createUser, getCurrentUser, login };
+const updateProfile = (req, res) => {
+  const { userId } = req.param;
+  const { name, avatar } = req.body;
+  User.findByIdAndUpdate(
+    userId,
+    { name, avatar },
+    {
+      new: true,
+      runValidators: true,
+      upsert: true,
+    },
+  )
+    .orFail()
+    .then((user) => res.status(200).send({ data: user }))
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND_ERROR).send({ message: err.message });
+      } else if (err.name === "CastError") {
+        return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
+      }
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+    });
+};
+
+module.exports = { login, createUser, getCurrentUser, updateProfile };
