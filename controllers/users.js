@@ -17,7 +17,7 @@ const login = (req, res) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       console.log(user);
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+      const token = jwt.sign({ _id: user._id }, "super-strong-secret", {
         expiresIn: "7d",
       });
       res.send({ token }, console.log({ token }));
@@ -43,10 +43,10 @@ const createUser = (req, res) => {
   console.log(req.body);
 
   bcrypt
-    .hash(password, 10)
+    .hash(password,10)
     .then(console.log(password))
     .then((hash) =>
-      User.create({ name, avatar, email, password: hash }, console.log(hash)),
+      User.create({ name, avatar, email, password }, console.log(hash)),
     )
     .then((user) => res.status(201).send({name: user.name, avatar: user.avatar, email: user.email}))
     .catch((err) => {
