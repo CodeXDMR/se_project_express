@@ -50,7 +50,7 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
     }
     return bcrypt
       .compare(password, user.password)
-      .then(console.log(password, user.password))
+      .then(console.log("",password,'\n',user.password))
       .then((matched) => {
         console.log(matched);
         if (!matched) {
