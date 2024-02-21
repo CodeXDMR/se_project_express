@@ -12,15 +12,13 @@ const {
 
 const login = (req, res) => {
   const { email, password } = req.body;
-  // console.log(email, password);
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      console.log(user);
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      res.send({ token }, console.log({ token }));
+      res.status(200).send({ token });
       // authentication successful! user is in the user variable
     })
     .catch((err) => {
@@ -40,14 +38,10 @@ const login = (req, res) => {
 // POST /signup
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
-  console.log(req.body);
 
   bcrypt
     .hash(password, 10)
-    .then(console.log(password))
-    .then((hash) =>
-      User.create({ name, avatar, email, password }, console.log(hash)),
-    )
+    .then((hash) => User.create({ name, avatar, email, password: hash }))
     .then((user) =>
       res
         .status(201)
@@ -106,23 +100,25 @@ const createUser = (req, res) => {
 // };
 
 const getCurrentUser = (req, res) => {
-  const { userId } = req.params;
+  const userId = req.user._id;
+  console.log(userId);
+  console.log(req.user);
   User.findById(userId)
     .orFail()
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.status(200).send({ data: user }))
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
         return res
           .status(NOT_FOUND_ERROR)
-          .send({ message: "The request was sent to a non-existent address." });
+          .send({ message: "The request was sent to a non-existent address. (404)" });
       }
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data." });
+        return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data. (400)" });
       }
       return res
         .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
+        .send({ message: "An error has occurred on the server. (500)" });
     });
 };
 
