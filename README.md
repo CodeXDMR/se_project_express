@@ -9,7 +9,9 @@ The back-end project is focused on creating a server for the WTWR application. Y
 ### Testing
 Before committing your code, make sure you edit the file `sprint.txt` in the root folder. The file `sprint.txt` should contain the number of the sprint you're currently working on. For ex. 12
 
-After creating a Postman account and following the supplied link from Sprint 12, fork the supplied collection and un the test collection.
+After creating a Postman account and following the supplied link from Sprint 13, fork the supplied collection and un the test collection.
 
 ### GitHub Actions
-After uploading the app to your GitHub account, test the code by running GitHub Actions loated under Actions.
+After uploading the app to your GitHub account, test the code by running GitHub Actions located under Actions.
+
+

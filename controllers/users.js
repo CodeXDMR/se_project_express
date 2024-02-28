@@ -19,7 +19,6 @@ const login = (req, res) => {
         expiresIn: "7d",
       });
       res.status(200).send({ token });
-      // authentication successful! user is in the user variable
     })
     .catch((err) => {
       console.error(err);
@@ -63,46 +62,10 @@ const createUser = (req, res) => {
     });
 };
 
-//  GET /users
-// const getUsers = (req, res) => {
-//   User.find({})
-//     .then((users) => res.status(200).send(users))
-//     .catch((err) => {
-//       console.error(err);
-//       return res
-//         .status(INTERNAL_SERVER_ERROR)
-//         .send({ message: "An error has occurred on the server. (500)" });
-//     });
-// };
-
-// GET /user
-// const getUser = (req, res) => {
-//   const { userId } = req.params;
-//   User.findById(userId)
-//     .orFail()
-//     .then((user) => res.status(200).send(user))
-//     .catch((err) => {
-//       console.error(err);
-//       if (err.name === "DocumentNotFoundError") {
-//         return res.status(NOT_FOUND_ERROR).send({
-//           message: "The request was sent to a non-existent address. (404)",
-//         });
-//       }
-//       if (err.name === "CastError") {
-//         return res
-//           .status(BAD_REQUEST_ERROR)
-//           .send({ message: "Invalid data. (400)" });
-//       }
-//       return res
-//         .status(INTERNAL_SERVER_ERROR)
-//         .send({ message: "An error has occurred on the server. (500)" });
-//     });
-// };
 
 const getCurrentUser = (req, res) => {
   const userId = req.user._id;
-  console.log(userId);
-  console.log(req.user);
+
   User.findById(userId)
     .orFail()
     .then((user) => res.status(200).send({ data: user }))

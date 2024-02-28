@@ -3,6 +3,7 @@ const {
   BAD_REQUEST_ERROR,
   NOT_FOUND_ERROR,
   INTERNAL_SERVER_ERROR,
+  FORBIDDEN_ERROR,
 } = require("../utils/errors");
 
 // POST /item
@@ -45,21 +46,30 @@ const getItems = (req, res) => {
 // DELETE /item
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-
-  console.log(itemId);
   clothingItem
-    .findByIdAndDelete(itemId)
+    .findById(itemId)
     .orFail()
-    .then((item) => res.status(200).send(item))
+    .then((item) => {
+      if (item.owner.toString() !== req.user._id.toString()) {
+        return res
+          .status(FORBIDDEN_ERROR)
+          .send({ message: "Action is forbidden. (403)" });
+      }
+      return item.remove().then(() => {
+        res.status(200).send({ message: "Item deleted successfully!" });
+      });
+    })
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(NOT_FOUND_ERROR)
-          .send({ message: "The request was sent to a non-existent address. (404)" });
+        return res.status(NOT_FOUND_ERROR).send({
+          message: "The request was sent to a non-existent address. (404)",
+        });
       }
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data. (400)" });
+        return res
+          .status(BAD_REQUEST_ERROR)
+          .send({ message: "Invalid data. (400)" });
       }
       return res
         .status(INTERNAL_SERVER_ERROR)

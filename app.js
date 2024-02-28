@@ -2,8 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
 const mainRouter = require("./routes/index");
-// const { createUser } = require("./controllers/users");
-// const {auth} = require("./middleware/auth");
+const cors = require("cors");
+
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -15,18 +15,9 @@ mongoose
   })
   .catch(console.error);
 
-// Code implementation for the next sprint.
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: "65bfed1ed2dca4ea70b291b4",
-//   };
-//   next();
-// });
-
 const routes = require("./routes");
-// app.use(auth)
 
-// app.post("/signup", createUser);
+app.use(cors());
 app.use(helmet());
 app.use(express.json());
 app.use(routes);
