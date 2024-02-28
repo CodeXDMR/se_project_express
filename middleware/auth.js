@@ -4,7 +4,6 @@ const { AUTHORIZATION_ERROR } = require("../utils/errors");
 
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
-  console.log(req.headers);
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
     return res
@@ -24,9 +23,9 @@ const auth = (req, res, next) => {
   }
 
   req.user = payload;
-  // console.log(req.user)
 
   next();
+
 };
 
 module.exports = { auth };
