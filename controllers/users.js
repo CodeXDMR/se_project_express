@@ -13,21 +13,21 @@ const {
 const login = (req, res) => {
   const { email, password } = req.body;
 
+  if (!email || !password) {
+    return res
+      .status(BAD_REQUEST_ERROR)
+      .send({ message: "Invalid data. (400)" });
+  }
+
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      res.status(200).send({ token });
+      res.send({ token });
     })
     .catch((err) => {
       console.error(err);
-      if (!email || !password) {
-        return res
-          .status(BAD_REQUEST_ERROR)
-          .send({ message: "Invalid data. (400)" });
-      }
-
       return res
         .status(AUTHORIZATION_ERROR)
         .send({ message: "Authorization error. (401)" });
@@ -62,22 +62,23 @@ const createUser = (req, res) => {
     });
 };
 
-
 const getCurrentUser = (req, res) => {
   const userId = req.user._id;
 
   User.findById(userId)
     .orFail()
-    .then((user) => res.status(200).send({ data: user }))
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(NOT_FOUND_ERROR)
-          .send({ message: "The request was sent to a non-existent address. (404)" });
+        return res.status(NOT_FOUND_ERROR).send({
+          message: "The request was sent to a non-existent address. (404)",
+        });
       }
       if (err.name === "CastError") {
-        return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data. (400)" });
+        return res
+          .status(BAD_REQUEST_ERROR)
+          .send({ message: "Invalid data. (400)" });
       }
       return res
         .status(INTERNAL_SERVER_ERROR)
@@ -86,27 +87,39 @@ const getCurrentUser = (req, res) => {
 };
 
 const updateProfile = (req, res) => {
-  const { userId } = req.param;
+  const userId = req.user._id;
   const { name, avatar } = req.body;
+
   User.findByIdAndUpdate(
     userId,
     { name, avatar },
     {
       new: true,
       runValidators: true,
-      upsert: true,
     },
   )
     .orFail()
-    .then((user) => res.status(200).send({ data: user }))
+    .then((user) => res.send({ data: user }))
     .catch((err) => {
       console.error(err);
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND_ERROR).send({ message: err.message });
-      } if (err.name === "CastError") {
-        return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
+      if (err.name === "ValidationError") {
+        return res
+          .status(BAD_REQUEST_ERROR)
+          .send({ message: "Invalid data. (400)" });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND_ERROR).send({
+          message: "The request was sent to a non-existent address. (404)",
+        });
+      }
+      if (err.name === "CastError") {
+        return res
+          .status(BAD_REQUEST_ERROR)
+          .send({ message: "Invalid data. (400)" });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "An error has occurred on the server. (500)" });
     });
 };
 
