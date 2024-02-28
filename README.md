@@ -7,7 +7,7 @@ The back-end project is focused on creating a server for the WTWR application.  
 `npm run dev` — to launch the server with the hot reload feature
 
 ### Testing
-[Postman and MongoDB compass was used to test the API and user/item databases.](./readme/graphics/Postman.png)[](./readme/graphics/MongoDB.png)
+Postman and MongoDB compass was used to test the API and user/item databases.[Postman Screen Shot](./readme/graphics/Postman.png)[MongoDB Screen Shot](./readme/graphics/MongoDB.png)
 
 ### GitHub Actions
 After uploading the app to your GitHub account, test the code by running GitHub Actions located under Actions.
